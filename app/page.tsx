@@ -19,8 +19,11 @@ export default function Home() {
   const [date, setDate] = useState<string>("");
   const [itemName, setItemName] = useState<string>("");
   const [items, setItems] = useState<Item[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
+  const [isRegisterModalOpen, setIsRegisterModalOpen] =
+    useState<boolean>(false);
   const [tempPrice, setTempPrice] = useState<number | null>(null);
+  const [finalPrice, setFinalPrice] = useState<number>(0);
   const priceInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -141,17 +144,39 @@ export default function Home() {
   };
 
   const handleDeleteClick = () => {
-    setIsModalOpen(true);
+    setIsDeleteModalOpen(true);
   };
 
   const confirmDeletion = () => {
     setItems([]);
     setDate("");
-    setIsModalOpen(false);
+    setIsDeleteModalOpen(false);
   };
 
   const cancelDeletion = () => {
-    setIsModalOpen(false);
+    setIsDeleteModalOpen(false);
+  };
+
+  const openRegisterModal = () => {
+    setIsRegisterModalOpen(true);
+  };
+
+  const closeRegisterModal = () => {
+    setIsRegisterModalOpen(false);
+  };
+
+  const handleFinalPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFinalPrice(parseFloat(e.target.value));
+  };
+
+  const handleRegisterPurchase = () => {
+    const grocery: Grocery = {
+      date,
+      items,
+      finalPrice,
+    };
+    console.log(grocery);
+    setIsRegisterModalOpen(false);
   };
 
   return (
@@ -187,7 +212,7 @@ export default function Home() {
           </button>
         </div>
         <button
-          onClick={() => console.log(items)}
+          onClick={openRegisterModal}
           className="rounded bg-blue-500 p-2 text-white"
         >
           Cadastrar compra
@@ -285,7 +310,9 @@ export default function Home() {
       >
         Apagar compra
       </button>
-      {isModalOpen && (
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="w-[30rem] rounded-lg bg-white p-6 shadow-lg">
             <h2 className="mb-4 text-lg font-bold">
@@ -305,6 +332,38 @@ export default function Home() {
                 className="rounded bg-red-600 px-4 py-2 text-white"
               >
                 Sim
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Register Purchase Modal */}
+      {isRegisterModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="w-[30rem] rounded-lg bg-white p-6 shadow-lg">
+            <h2 className="mb-4 text-lg font-bold">
+              Preço final pago na compra
+            </h2>
+            <input
+              type="number"
+              value={finalPrice}
+              onChange={handleFinalPriceChange}
+              className="mb-4 w-full rounded border p-2"
+              placeholder="Digite o preço final"
+            />
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={closeRegisterModal}
+                className="rounded bg-gray-300 px-4 py-2"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleRegisterPurchase}
+                className="rounded bg-blue-600 px-4 py-2 text-white"
+              >
+                Cadastrar
               </button>
             </div>
           </div>
