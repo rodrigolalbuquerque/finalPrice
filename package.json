@@ -1,0 +1,40 @@
+{
+  "name": "react-design-pattern",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "update-types": "npx supabase gen types --lang=typescript --project-id \"dzqjorahhjpeojplzqzg\" > database.types.ts"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.4.0",
+    "@supabase/supabase-js": "^2.45.1",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
+    "date-fns": "^3.6.0",
+    "eslint-config-prettier": "^9.0.0",
+    "lucide-react": "^0.427.0",
+    "next": "latest",
+    "prettier": "^3.0.3",
+    "prettier-plugin-tailwindcss": "^0.5.4",
+    "react": "latest",
+    "react-dom": "latest",
+    "tailwind-merge": "^2.4.0",
+    "tailwindcss-animate": "^1.0.7"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "autoprefixer": "latest",
+    "eslint": "latest",
+    "eslint-config-next": "latest",
+    "postcss": "latest",
+    "supabase": "^1.178.2",
+    "tailwindcss": "latest",
+    "typescript": "latest"
+  }
+}
