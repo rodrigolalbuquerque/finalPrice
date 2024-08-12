@@ -1,3 +1,4 @@
+"use server";
 import { createSupabaseRouteAndActionsClient } from "./utils/supabase/actions";
 
 export async function getGroceriesData(id: number) {

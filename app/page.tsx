@@ -1,18 +1,20 @@
 "use client";
+import { storeGrocery } from "@/homepage.actions";
 import { useState, useEffect } from "react";
 import { useRef } from "react";
 
-interface Item {
+export interface Item {
   name: string;
   quantity: number;
   price: number;
   isEditingPrice?: boolean; // New property to track if the price is being edited
 }
 
-interface Grocery {
+export interface Grocery {
   date: string;
   items: Item[];
   finalPrice: number;
+  market: string;
 }
 
 export default function Home() {
@@ -25,6 +27,7 @@ export default function Home() {
   const [tempPrice, setTempPrice] = useState<number | null>(null);
   const [finalPrice, setFinalPrice] = useState<number>(0);
   const priceInputRef = useRef<HTMLInputElement | null>(null);
+  const [market, setMarket] = useState<string>(""); // New state for market
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -85,6 +88,10 @@ export default function Home() {
     };
     setItems([...items, newItem]);
     setItemName("");
+  };
+
+  const handleMarketChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMarket(e.target.value); // Handle market input change
   };
 
   const handleQuantityChange = (index: number, value: number) => {
@@ -169,13 +176,16 @@ export default function Home() {
     setFinalPrice(parseFloat(e.target.value));
   };
 
-  const handleRegisterPurchase = () => {
+  const handleRegisterPurchase = async () => {
     const grocery: Grocery = {
       date,
       items,
       finalPrice,
+      market,
     };
-    console.log(grocery);
+    await storeGrocery(grocery);
+    setItems([]);
+    setDate("");
     setIsRegisterModalOpen(false);
   };
 
@@ -341,27 +351,47 @@ export default function Home() {
       {/* Register Purchase Modal */}
       {isRegisterModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="w-[30rem] rounded-lg bg-white p-6 shadow-lg">
-            <h2 className="mb-4 text-lg font-bold">
-              Preço final pago na compra
-            </h2>
+          <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
+            <label
+              htmlFor="finalPriceInput"
+              className="mb-2 block text-sm font-medium text-gray-700"
+            >
+              Preço Final:
+            </label>
             <input
               type="number"
+              id="finalPriceInput"
               value={finalPrice}
               onChange={handleFinalPriceChange}
               className="mb-4 w-full rounded border p-2"
               placeholder="Digite o preço final"
             />
+
+            <label
+              htmlFor="marketInput"
+              className="mb-2 block text-sm font-medium text-gray-700"
+            >
+              Mercado:
+            </label>
+            <input
+              type="text"
+              id="marketInput"
+              value={market}
+              onChange={handleMarketChange}
+              className="mb-4 w-full rounded border p-2"
+              placeholder="Digite o nome do mercado"
+            />
+
             <div className="flex justify-end space-x-4">
               <button
                 onClick={closeRegisterModal}
-                className="rounded bg-gray-300 px-4 py-2"
+                className="rounded bg-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-400"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleRegisterPurchase}
-                className="rounded bg-blue-600 px-4 py-2 text-white"
+                className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
               >
                 Cadastrar
               </button>
