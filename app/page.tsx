@@ -184,9 +184,9 @@ export default function Home() {
       market,
     };
     await storeGrocery(grocery);
-    setItems([]);
-    setDate("");
-    setIsRegisterModalOpen(false);
+    // setItems([]);
+    // setDate("");
+    // setIsRegisterModalOpen(false);
   };
 
   return (

@@ -89,17 +89,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      get_groceries_data: {
-        Args: {
-          input_groceries_id: number
-        }
+      get_product_price_stats: {
+        Args: Record<PropertyKey, never>
         Returns: {
-          product_id: number
-          product_name: string
-          groceries_id: number
-          groceries_date: string
-          price: number
-          market: string
+          name: string
+          minprice: number
+          maxprice: number
+          avgprice: number
         }[]
       }
     }

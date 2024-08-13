@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "update-types": "npx supabase gen types --lang=typescript --project-id \"dzqjorahhjpeojplzqzg\" > database.types.ts"
+    "update-types": "npx supabase gen types --lang=typescript --project-id \"dzqjorahhjpeojplzqzg\" > types/supabase.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.4.0",

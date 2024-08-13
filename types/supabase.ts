@@ -4,115 +4,126 @@ export type Json =
   | boolean
   | null
   | { [key: string]: Json | undefined }
-  | Json[];
+  | Json[]
 
 export type Database = {
   public: {
     Tables: {
       groceries: {
         Row: {
-          created_at: string;
-          date: string | null;
-          id: number;
-        };
+          created_at: string
+          date: string | null
+          finalPrice: number | null
+          id: number
+          market: string | null
+        }
         Insert: {
-          created_at?: string;
-          date?: string | null;
-          id?: number;
-        };
+          created_at?: string
+          date?: string | null
+          finalPrice?: number | null
+          id?: number
+          market?: string | null
+        }
         Update: {
-          created_at?: string;
-          date?: string | null;
-          id?: number;
-        };
-        Relationships: [];
-      };
+          created_at?: string
+          date?: string | null
+          finalPrice?: number | null
+          id?: number
+          market?: string | null
+        }
+        Relationships: []
+      }
       groceries_product: {
         Row: {
-          created_at: string;
-          groceries_id: number | null;
-          market: string | null;
-          price: number | null;
-          product_id: number;
-        };
+          created_at: string
+          groceries_id: number | null
+          price: number | null
+          product_id: number
+        }
         Insert: {
-          created_at?: string;
-          groceries_id?: number | null;
-          market?: string | null;
-          price?: number | null;
-          product_id?: number;
-        };
+          created_at?: string
+          groceries_id?: number | null
+          price?: number | null
+          product_id?: number
+        }
         Update: {
-          created_at?: string;
-          groceries_id?: number | null;
-          market?: string | null;
-          price?: number | null;
-          product_id?: number;
-        };
+          created_at?: string
+          groceries_id?: number | null
+          price?: number | null
+          product_id?: number
+        }
         Relationships: [
           {
-            foreignKeyName: "groceries_product_groceries_id_fkey";
-            columns: ["groceries_id"];
-            isOneToOne: false;
-            referencedRelation: "groceries";
-            referencedColumns: ["id"];
+            foreignKeyName: "groceries_product_groceries_id_fkey"
+            columns: ["groceries_id"]
+            isOneToOne: false
+            referencedRelation: "groceries"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "groceries_product_product_id_fkey";
-            columns: ["product_id"];
-            isOneToOne: true;
-            referencedRelation: "product";
-            referencedColumns: ["id"];
+            foreignKeyName: "groceries_product_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: true
+            referencedRelation: "product"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       product: {
         Row: {
-          created_at: string;
-          id: number;
-          name: string | null;
-        };
+          created_at: string
+          id: number
+          name: string | null
+        }
         Insert: {
-          created_at?: string;
-          id?: number;
-          name?: string | null;
-        };
+          created_at?: string
+          id?: number
+          name?: string | null
+        }
         Update: {
-          created_at?: string;
-          id?: number;
-          name?: string | null;
-        };
-        Relationships: [];
-      };
-    };
+          created_at?: string
+          id?: number
+          name?: string | null
+        }
+        Relationships: []
+      }
+    }
     Views: {
-      [_ in never]: never;
-    };
+      [_ in never]: never
+    }
     Functions: {
       get_groceries_data: {
         Args: {
-          input_groceries_id: number;
-        };
+          input_groceries_id: number
+        }
         Returns: {
-          product_id: number;
-          product_name: string;
-          groceries_id: number;
-          groceries_date: string;
-          price: number;
-          market: string;
-        }[];
-      };
-    };
+          product_id: number
+          product_name: string
+          groceries_date: string
+          price: number
+          market: string
+        }[]
+      }
+      get_product_price_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          name: string
+          minprice: number
+          maxprice: number
+          avgprice: number
+        }[]
+      }
+    }
     Enums: {
-      [_ in never]: never;
-    };
+      [_ in never]: never
+    }
     CompositeTypes: {
-      [_ in never]: never;
-    };
-  };
-};
+      [_ in never]: never
+    }
+  }
+}
 
-type PublicSchema = Database[Extract<keyof Database, "public">];
+type PublicSchema = Database[Extract<keyof Database, "public">]
 
 export type Tables<
   PublicTableNameOrOptions extends
@@ -125,7 +136,7 @@ export type Tables<
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
       Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R;
+      Row: infer R
     }
     ? R
     : never
@@ -133,11 +144,11 @@ export type Tables<
         PublicSchema["Views"])
     ? (PublicSchema["Tables"] &
         PublicSchema["Views"])[PublicTableNameOrOptions] extends {
-        Row: infer R;
+        Row: infer R
       }
       ? R
       : never
-    : never;
+    : never
 
 export type TablesInsert<
   PublicTableNameOrOptions extends
@@ -148,17 +159,17 @@ export type TablesInsert<
     : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I;
+      Insert: infer I
     }
     ? I
     : never
   : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
     ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
-        Insert: infer I;
+        Insert: infer I
       }
       ? I
       : never
-    : never;
+    : never
 
 export type TablesUpdate<
   PublicTableNameOrOptions extends
@@ -169,17 +180,17 @@ export type TablesUpdate<
     : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U;
+      Update: infer U
     }
     ? U
     : never
   : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
     ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
-        Update: infer U;
+        Update: infer U
       }
       ? U
       : never
-    : never;
+    : never
 
 export type Enums<
   PublicEnumNameOrOptions extends
@@ -192,4 +203,4 @@ export type Enums<
   ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
     ? PublicSchema["Enums"][PublicEnumNameOrOptions]
-    : never;
+    : never

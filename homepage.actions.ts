@@ -2,8 +2,45 @@
 import { Grocery } from "./app/page";
 import { createSupabaseRouteAndActionsClient } from "./utils/supabase/actions";
 
-export async function storeGrocery(grocery: Grocery) {
+function adjustPrices(grocery: Grocery): Grocery {
+  // Calculate the total original price by summing the prices of all items
+  const totalOriginalPrice = grocery.items.reduce(
+    (sum, item) => sum + item.price,
+    0,
+  );
+
+  if (totalOriginalPrice === 0) {
+    throw new Error(
+      "Total original price is zero, cannot adjust prices proportionally.",
+    );
+  }
+
+  // Calculate the adjustment factor based on the ratio of finalPrice to totalOriginalPrice
+  const adjustmentFactor = grocery.finalPrice / totalOriginalPrice;
+
+  // Adjust the price of each item based on the adjustment factor
+  const adjustedItems = grocery.items.map((item) => {
+    // Adjusted total price for the item
+    const adjustedTotalPrice = item.price * adjustmentFactor;
+
+    // Adjusted price per unit of the item
+    const adjustedUnitPrice = adjustedTotalPrice / item.quantity;
+
+    return {
+      ...item,
+      price: +adjustedUnitPrice.toFixed(2), // Adjusted total price for the given quantity
+    };
+  });
+
+  return {
+    ...grocery,
+    items: adjustedItems,
+  };
+}
+
+export async function storeGrocery(rawGrocery: Grocery) {
   const supabase = createSupabaseRouteAndActionsClient();
+  const grocery = adjustPrices(rawGrocery);
 
   const date = new Date(grocery.date);
 
@@ -13,7 +50,11 @@ export async function storeGrocery(grocery: Grocery) {
     error: groceryError,
   } = await supabase
     .from("groceries")
-    .insert({ date: date.toISOString() })
+    .insert({
+      date: date.toISOString(),
+      market: grocery.market,
+      finalPrice: grocery.finalPrice,
+    })
     .select("id");
 
   if (!groceryData || groceryData.length < 1 || !groceryData[0].id) {
@@ -39,14 +80,12 @@ export async function storeGrocery(grocery: Grocery) {
     if (productError) console.log(productError);
     console.log(productStatus);
 
-    const { status, error } = await supabase.from("groceries_product").insert({
+    const { error } = await supabase.from("groceries_product").insert({
       groceries_id: groceryData[0].id,
       product_id: productData[0].id,
-      price: grocery.finalPrice,
-      market: grocery.market,
+      price: item.price,
     });
 
     if (error) console.log(error);
-    console.log(status);
   }
 }

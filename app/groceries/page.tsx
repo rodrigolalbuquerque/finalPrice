@@ -1,35 +1,34 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { getGroceriesData } from "./groceries.actions";
+
+type groceryDataT =
+  | {
+      id: number;
+      date: string | null;
+      market: string | null;
+      finalPrice: number | null;
+    }[]
+  | null;
 
 export default function Groceries() {
+  const [grocery, setGrocery] = useState<groceryDataT>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  async function getData() {
+    const data = await getGroceriesData();
+    setGrocery(data);
+  }
 
   const handleRowClick = (id: string) => {
     router.push(`/groceries/${id}`);
   };
-
-  const groceries = [
-    {
-      id: 1,
-      date: "2024-08-09",
-      market: "Mundial",
-      price: 15.9,
-    },
-    {
-      id: 2,
-      date: "2024-07-05",
-      market: "Guanabara",
-      price: 40.15,
-    },
-    {
-      id: 3,
-      date: "2024-06-02",
-      market: "Rio Sul",
-      price: 10.24,
-    },
-    // Add more groceries as needed
-  ];
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -53,23 +52,24 @@ export default function Groceries() {
               </tr>
             </thead>
             <tbody>
-              {groceries.map((item, index) => (
-                <tr
-                  onClick={() => handleRowClick(`${item.id}`)}
-                  key={index}
-                  className="cursor-pointer border-t border-gray-200 hover:bg-slate-50"
-                >
-                  <td className="px-4 py-3 text-gray-800">{item.date}</td>
-                  <td className="px-4 py-3 text-gray-600">{item.market}</td>
-                  <td className="px-4 py-3 text-gray-600">
-                    {" "}
-                    {new Intl.NumberFormat("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    }).format(item.price)}
-                  </td>
-                </tr>
-              ))}
+              {grocery &&
+                grocery.map((item, index) => (
+                  <tr
+                    onClick={() => handleRowClick(`${item.id}`)}
+                    key={index}
+                    className="cursor-pointer border-t border-gray-200 hover:bg-slate-50"
+                  >
+                    <td className="px-4 py-3 text-gray-800">{item.date}</td>
+                    <td className="px-4 py-3 text-gray-600">{item.market}</td>
+                    <td className="px-4 py-3 text-gray-600">
+                      {item.finalPrice &&
+                        new Intl.NumberFormat("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        }).format(item.finalPrice)}
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
