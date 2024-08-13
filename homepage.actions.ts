@@ -84,8 +84,18 @@ export async function storeGrocery(rawGrocery: Grocery) {
       groceries_id: groceryData[0].id,
       product_id: productData[0].id,
       price: item.price,
+      quantity: item.quantity,
     });
 
     if (error) console.log(error);
   }
+}
+
+export async function getProductsNamesList() {
+  const supabase = createSupabaseRouteAndActionsClient();
+  const { data, error } = await supabase.from("product").select("name");
+
+  if (error) console.log(error);
+
+  return data;
 }

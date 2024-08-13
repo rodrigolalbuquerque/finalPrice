@@ -9,7 +9,7 @@ type groceryDataT =
       id: number;
       date: string | null;
       market: string | null;
-      finalPrice: number | null;
+      final_price: number | null;
     }[]
   | null;
 
@@ -62,11 +62,11 @@ export default function Groceries() {
                     <td className="px-4 py-3 text-gray-800">{item.date}</td>
                     <td className="px-4 py-3 text-gray-600">{item.market}</td>
                     <td className="px-4 py-3 text-gray-600">
-                      {item.finalPrice &&
+                      {item.final_price &&
                         new Intl.NumberFormat("pt-BR", {
                           style: "currency",
                           currency: "BRL",
-                        }).format(item.finalPrice)}
+                        }).format(item.final_price)}
                     </td>
                   </tr>
                 ))}

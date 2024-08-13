@@ -13,21 +13,21 @@ export type Database = {
         Row: {
           created_at: string
           date: string | null
-          finalPrice: number | null
+          final_price: number | null
           id: number
           market: string | null
         }
         Insert: {
           created_at?: string
           date?: string | null
-          finalPrice?: number | null
+          final_price?: number | null
           id?: number
           market?: string | null
         }
         Update: {
           created_at?: string
           date?: string | null
-          finalPrice?: number | null
+          final_price?: number | null
           id?: number
           market?: string | null
         }
@@ -39,18 +39,21 @@ export type Database = {
           groceries_id: number | null
           price: number | null
           product_id: number
+          quantity: number | null
         }
         Insert: {
           created_at?: string
           groceries_id?: number | null
           price?: number | null
           product_id?: number
+          quantity?: number | null
         }
         Update: {
           created_at?: string
           groceries_id?: number | null
           price?: number | null
           product_id?: number
+          quantity?: number | null
         }
         Relationships: [
           {
@@ -102,6 +105,8 @@ export type Database = {
           groceries_date: string
           price: number
           market: string
+          quantity: number
+          finalprice: number
         }[]
       }
       get_product_price_stats: {

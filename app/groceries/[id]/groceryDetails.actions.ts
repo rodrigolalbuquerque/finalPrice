@@ -1,5 +1,5 @@
 "use server";
-import { createSupabaseRouteAndActionsClient } from "./utils/supabase/actions";
+import { createSupabaseRouteAndActionsClient } from "../../../utils/supabase/actions";
 
 export async function getGroceriesData(id: number) {
   const supabase = createSupabaseRouteAndActionsClient();

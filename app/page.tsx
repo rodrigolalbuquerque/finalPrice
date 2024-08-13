@@ -1,7 +1,13 @@
 "use client";
-import { storeGrocery } from "@/homepage.actions";
+import { getProductsNamesList, storeGrocery } from "@/homepage.actions";
 import { useState, useEffect } from "react";
 import { useRef } from "react";
+
+type ItemList =
+  | {
+      name: string | null;
+    }[]
+  | null;
 
 export interface Item {
   name: string;
@@ -27,7 +33,16 @@ export default function Home() {
   const [tempPrice, setTempPrice] = useState<number | null>(null);
   const [finalPrice, setFinalPrice] = useState<number>(0);
   const priceInputRef = useRef<HTMLInputElement | null>(null);
-  const [market, setMarket] = useState<string>(""); // New state for market
+  const [market, setMarket] = useState<string>("");
+  const [itemsList, setItemsList] = useState<ItemList>(null);
+
+  useEffect(() => {
+    async function getList() {
+      const list = await getProductsNamesList();
+      setItemsList(list);
+    }
+    getList();
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -218,7 +233,7 @@ export default function Home() {
             onClick={handleAddItem}
             className="rounded bg-blue-500 p-2 text-white"
           >
-            Add
+            Adicionar
           </button>
         </div>
         <button
