@@ -53,36 +53,47 @@ export async function storeGrocery(rawGrocery: Grocery) {
     .insert({
       date: date.toISOString(),
       market: grocery.market,
-      finalPrice: grocery.finalPrice,
+      final_price: grocery.finalPrice,
     })
     .select("id");
+
+  if (groceryError) console.log(groceryError);
+  console.log(groceryStatus);
 
   if (!groceryData || groceryData.length < 1 || !groceryData[0].id) {
     console.log("No Grocery id returned");
     return;
   }
 
-  if (groceryError) console.log(groceryError);
-  console.log(groceryStatus);
-
   for (let item of grocery.items) {
-    const {
-      data: productData,
-      status: productStatus,
-      error: productError,
-    } = await supabase.from("product").insert({ name: item.name }).select("id");
+    let itemId;
 
-    if (!productData || productData.length < 1 || !productData[0].id) {
-      console.log("No Product id returned");
-      return;
+    if (item.id) {
+      itemId = item.id;
+    } else {
+      const {
+        data: productData,
+        status: productStatus,
+        error: productError,
+      } = await supabase
+        .from("product")
+        .insert({ name: item.name })
+        .select("id");
+
+      if (!productData || productData.length < 1 || !productData[0].id) {
+        console.log("No Product id returned");
+        return;
+      }
+
+      if (productError) console.log(productError);
+      console.log(productStatus);
+
+      itemId = productData[0].id;
     }
-
-    if (productError) console.log(productError);
-    console.log(productStatus);
 
     const { error } = await supabase.from("groceries_product").insert({
       groceries_id: groceryData[0].id,
-      product_id: productData[0].id,
+      product_id: itemId,
       price: item.price,
       quantity: item.quantity,
     });
@@ -93,7 +104,7 @@ export async function storeGrocery(rawGrocery: Grocery) {
 
 export async function getProductsNamesList() {
   const supabase = createSupabaseRouteAndActionsClient();
-  const { data, error } = await supabase.from("product").select("name");
+  const { data, error } = await supabase.from("product").select("name, id");
 
   if (error) console.log(error);
 

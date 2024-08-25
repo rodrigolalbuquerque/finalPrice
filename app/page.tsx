@@ -5,11 +5,13 @@ import { useRef } from "react";
 
 type ItemList =
   | {
-      name: string | null;
+      name: string;
+      id: number;
     }[]
   | null;
 
 export interface Item {
+  id?: number;
   name: string;
   quantity: number;
   price: number;
@@ -35,6 +37,8 @@ export default function Home() {
   const priceInputRef = useRef<HTMLInputElement | null>(null);
   const [market, setMarket] = useState<string>("");
   const [itemsList, setItemsList] = useState<ItemList>(null);
+  const [filteredItemsList, setFilteredItemsList] = useState<ItemList>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   useEffect(() => {
     async function getList() {
@@ -89,20 +93,55 @@ export default function Home() {
     localStorage.setItem("itemsList", JSON.stringify(items));
   }, [items]);
 
+  const handleItemNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value) {
+      setShowSuggestions(true);
+    } else {
+      setShowSuggestions(false);
+    }
+
+    setItemName(value);
+
+    if (itemsList) {
+      const filteredItems = itemsList.filter((item) =>
+        item.name.toLowerCase().includes(value.toLowerCase()),
+      );
+      setFilteredItemsList(filteredItems);
+    } else {
+      setFilteredItemsList([]);
+    }
+  };
+
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDate(e.target.value);
   };
 
-  const handleAddItem = () => {
+  const handleAddItem = (id?: number, storedItemName?: string) => {
     if (itemName.trim() === "") return;
 
-    const newItem: Item = {
-      name: itemName,
-      quantity: 0,
-      price: 0, // Initialize price as a number
-    };
-    setItems([...items, newItem]);
-    setItemName("");
+    if (id) {
+      if (!storedItemName) {
+        console.log("Error encountering correct name of the product");
+        return;
+      }
+      const newItem: Item = {
+        id,
+        name: storedItemName,
+        quantity: 0,
+        price: 0, // Initialize price as a number
+      };
+      setItems([...items, newItem]);
+      setItemName("");
+    } else {
+      const newItem: Item = {
+        name: itemName,
+        quantity: 0,
+        price: 0, // Initialize price as a number
+      };
+      setItems([...items, newItem]);
+      setItemName("");
+    }
   };
 
   const handleMarketChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -201,11 +240,11 @@ export default function Home() {
     await storeGrocery(grocery);
     // setItems([]);
     // setDate("");
-    // setIsRegisterModalOpen(false);
+    setIsRegisterModalOpen(false);
   };
 
   return (
-    <div className="p-4">
+    <div className="p-8">
       <div className="flex items-center">
         <label htmlFor="dateInput" className="mr-2 text-sm font-medium">
           Data:
@@ -221,16 +260,42 @@ export default function Home() {
 
       <div className="mt-4 flex w-[1200px] items-center justify-between">
         <div className="flex items-center space-x-2">
-          <input
-            maxLength={50}
-            type="text"
-            value={itemName}
-            onChange={(e) => setItemName(e.target.value)}
-            placeholder="Adicionar item"
-            className="rounded border p-2"
-          />
+          <div className="relative">
+            <input
+              maxLength={50}
+              type="text"
+              value={itemName}
+              onChange={handleItemNameChange}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleAddItem();
+                }
+              }}
+              placeholder="Adicionar item"
+              className="rounded border p-2"
+            />
+            {filteredItemsList &&
+              filteredItemsList.length > 0 &&
+              showSuggestions && (
+                <ul className="absolute left-0 mt-1 max-h-40 w-full overflow-y-auto rounded border border-gray-300 bg-white">
+                  {filteredItemsList.map((item, index) => (
+                    <li
+                      key={index}
+                      onClick={() => {
+                        handleAddItem(item.id, item.name);
+                        setFilteredItemsList([]);
+                      }}
+                      className="cursor-pointer px-4 py-2 hover:bg-gray-100"
+                    >
+                      {item.name}
+                    </li>
+                  ))}
+                </ul>
+              )}
+          </div>
+
           <button
-            onClick={handleAddItem}
+            onClick={() => handleAddItem()}
             className="rounded bg-blue-500 p-2 text-white"
           >
             Adicionar

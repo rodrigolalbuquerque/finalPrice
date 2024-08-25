@@ -1,0 +1,1 @@
+- Quando item for selecionado via sugestão, usar o id dele para fazer o insert
