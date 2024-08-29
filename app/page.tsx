@@ -261,8 +261,8 @@ export default function Home() {
     console.log(grocery);
 
     await storeGrocery(grocery);
-    // setItems([]);
-    // setDate("");
+    setItems([]);
+    setDate("");
     setIsRegisterModalOpen(false);
   };
 
