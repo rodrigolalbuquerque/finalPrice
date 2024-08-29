@@ -10,7 +10,8 @@ interface GroceryItem {
   groceries_date: string;
   price: number;
   market: string;
-  quantity: number;
+  quantity?: number;
+  kilograms?: number;
   finalprice: number;
 }
 
@@ -80,7 +81,7 @@ export default async function GroceriesPage({ params }: GroceriesPageProps) {
                   {item.product_name}
                 </td>
                 <td className="w-[25%] px-6 py-4 pl-14 text-gray-700">
-                  {`x${item.quantity}`}
+                  {item.quantity ? `x${item.quantity}` : `${item.kilograms}kg`}
                 </td>
                 <td className="w-[25%] px-6 py-4 text-right text-gray-900">
                   {formatCurrency(item.price)}

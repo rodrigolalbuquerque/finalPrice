@@ -24,7 +24,9 @@ function adjustPrices(grocery: Grocery): Grocery {
     const adjustedTotalPrice = item.price * adjustmentFactor;
 
     // Adjusted price per unit of the item
-    const adjustedUnitPrice = adjustedTotalPrice / item.quantity;
+    const adjustedUnitPrice = item.quantity
+      ? adjustedTotalPrice / item.quantity
+      : adjustedTotalPrice / item.kilograms!;
 
     return {
       ...item,
@@ -96,6 +98,7 @@ export async function storeGrocery(rawGrocery: Grocery) {
       product_id: itemId,
       price: item.price,
       quantity: item.quantity,
+      kilograms: item.kilograms,
     });
 
     if (error) console.log(error);

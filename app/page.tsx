@@ -13,7 +13,8 @@ type ItemList =
 export interface Item {
   id?: number;
   name: string;
-  quantity: number;
+  quantity?: number;
+  kilograms?: number;
   price: number;
   isEditingPrice?: boolean; // New property to track if the price is being edited
 }
@@ -150,17 +151,33 @@ export default function Home() {
 
   const handleQuantityChange = (index: number, value: number) => {
     const updatedItems = [...items];
-    updatedItems[index].quantity = value;
+    if (updatedItems[index].hasOwnProperty("quantity")) {
+      updatedItems[index].quantity = value;
+    } else {
+      updatedItems[index].kilograms = value / 1000;
+    }
     setItems(updatedItems);
   };
 
   const handleIncrement = (index: number) => {
-    handleQuantityChange(index, items[index].quantity + 1);
+    const updatedItems = [...items];
+    if (updatedItems[index].hasOwnProperty("quantity")) {
+      handleQuantityChange(index, updatedItems[index].quantity! + 1);
+    } else {
+      handleQuantityChange(index, updatedItems[index].kilograms! * 1000 + 50);
+    }
   };
 
   const handleDecrement = (index: number) => {
-    if (items[index].quantity > 0) {
-      handleQuantityChange(index, items[index].quantity - 1);
+    const updatedItems = [...items];
+    if (updatedItems[index].hasOwnProperty("quantity")) {
+      if (updatedItems[index].quantity! > 0) {
+        handleQuantityChange(index, updatedItems[index].quantity! - 1);
+      }
+    } else {
+      if (updatedItems[index].kilograms! > 0) {
+        handleQuantityChange(index, updatedItems[index].kilograms! * 1000 - 50);
+      }
     }
   };
 
@@ -219,6 +236,10 @@ export default function Home() {
   };
 
   const openRegisterModal = () => {
+    if (!date) {
+      alert("Selecione uma data.");
+      return;
+    }
     setIsRegisterModalOpen(true);
   };
 
@@ -237,11 +258,27 @@ export default function Home() {
       finalPrice,
       market,
     };
+    console.log(grocery);
+
     await storeGrocery(grocery);
     // setItems([]);
     // setDate("");
     setIsRegisterModalOpen(false);
   };
+
+  function toggleQuantityKilograms(index: number) {
+    const updatedItems = [...items];
+    if (updatedItems[index].hasOwnProperty("quantity")) {
+      const { quantity, ...rest } = updatedItems[index];
+      updatedItems[index] = { ...rest, kilograms: 0 };
+    } else {
+      const { kilograms, ...rest } = updatedItems[index];
+      updatedItems[index] = { ...rest, quantity: 0 };
+    }
+    setItems(updatedItems);
+  }
+
+  console.log(items);
 
   return (
     <div className="p-8">
@@ -342,14 +379,22 @@ export default function Home() {
                     -
                   </button>
                   <input
+                    step="0.01"
                     type="number"
-                    value={item.quantity}
-                    onChange={(e) =>
-                      handleQuantityChange(index, parseInt(e.target.value, 10))
+                    value={
+                      item.quantity !== undefined
+                        ? item.quantity
+                        : item.kilograms! * 1000
                     }
-                    className="w-12 rounded border p-1 text-center text-gray-800"
+                    onChange={(e) => {
+                      const value = parseInt(e.target.value, 10);
+                      handleQuantityChange(
+                        index,
+                        isNaN(value) || value < 0 ? 0 : value,
+                      );
+                    }}
+                    className={`${item.quantity !== undefined ? "w-12" : "w-[5rem]"} rounded border p-1 text-center text-gray-800`}
                     min={0}
-                    max={99}
                   />
                   <button
                     onClick={() => handleIncrement(index)}
@@ -357,7 +402,14 @@ export default function Home() {
                   >
                     +
                   </button>
+                  <span
+                    onClick={() => toggleQuantityKilograms(index)}
+                    className="ml-3 cursor-pointer rounded-md bg-yellow-200 px-2 py-[0.07rem]"
+                  >
+                    {item.hasOwnProperty("quantity") ? "Und." : "g"}
+                  </span>
                 </td>
+
                 <td className="px-4 py-3 text-gray-600">
                   {item.isEditingPrice ? (
                     <input

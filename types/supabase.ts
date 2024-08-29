@@ -36,21 +36,24 @@ export type Database = {
       groceries_product: {
         Row: {
           created_at: string
-          groceries_id: number | null
+          groceries_id: number
+          kilograms: number | null
           price: number | null
           product_id: number
           quantity: number | null
         }
         Insert: {
           created_at?: string
-          groceries_id?: number | null
+          groceries_id: number
+          kilograms?: number | null
           price?: number | null
           product_id?: number
           quantity?: number | null
         }
         Update: {
           created_at?: string
-          groceries_id?: number | null
+          groceries_id?: number
+          kilograms?: number | null
           price?: number | null
           product_id?: number
           quantity?: number | null
@@ -66,7 +69,7 @@ export type Database = {
           {
             foreignKeyName: "groceries_product_product_id_fkey"
             columns: ["product_id"]
-            isOneToOne: true
+            isOneToOne: false
             referencedRelation: "product"
             referencedColumns: ["id"]
           },

@@ -1,1 +1,7 @@
-- Quando item for selecionado via sugestão, usar o id dele para fazer o insert
+Erro ao tentar cadastrar a compra:
+{
+  code: '22P02',
+  details: null,
+  hint: null,
+  message: 'invalid input syntax for type bigint: "0.5"'
+}
