@@ -2,9 +2,10 @@ import { notFound } from "next/navigation";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale"; // Correct import
 import { getGroceriesData } from "./groceryDetails.actions";
+import ItemPrice from "@/components/ItemPrice";
 
 // Define types for the groceries data
-interface GroceryItem {
+export interface GroceryItem {
   product_id: number;
   product_name: string;
   groceries_date: string;
@@ -70,7 +71,7 @@ export default async function GroceriesPage({ params }: GroceriesPageProps) {
                 Quantidade
               </th>
               <th className="w-[25%] px-6 py-3 text-right  font-semibold text-gray-700">
-                Preço da unidade
+                Preço
               </th>
             </tr>
           </thead>
@@ -81,10 +82,10 @@ export default async function GroceriesPage({ params }: GroceriesPageProps) {
                   {item.product_name}
                 </td>
                 <td className="w-[25%] px-6 py-4 pl-14 text-gray-700">
-                  {item.quantity ? `x${item.quantity}` : `${item.kilograms}kg`}
+                  {item.quantity ? `x${item.quantity}` : `${item.kilograms} kg`}
                 </td>
                 <td className="w-[25%] px-6 py-4 text-right text-gray-900">
-                  {formatCurrency(item.price)}
+                  <ItemPrice item={item} />
                 </td>
               </tr>
             ))}

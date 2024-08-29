@@ -109,6 +109,7 @@ export type Database = {
           price: number
           market: string
           quantity: number
+          kilograms: number
           finalprice: number
         }[]
       }
